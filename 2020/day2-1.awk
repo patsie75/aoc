@@ -7,7 +7,7 @@
   n = split($3, passwd, "")
 
   count = 0
-  # loop over password and cound number of characters
+  # loop over password and count number of characters
   for (i=1; i<=n; i++) {
     if (passwd[i] == char)
       count++
