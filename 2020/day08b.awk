@@ -1,14 +1,5 @@
 #!/usr/bin/awk -f
 
-## copy src array to dst array
-function copy(src, dst,    l, i) {
-  l = length(src)
-
-  delete dst
-  for (i=0; i<l; i++)
-    dst[i] = src[i]
-}
-
 ## run code
 function run(code,     size, acc, ip, visited, instr) {
   size = length(code)
