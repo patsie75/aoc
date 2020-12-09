@@ -1,14 +1,5 @@
 #!/usr/bin/awk -f
 
-## copy src array to dst array
-function copy(src, dst,    l, i) {
-  l = length(src)
-
-  delete dst
-  for (i=0; i<l; i++)
-    dst[i] = src[i]
-}
-
 ## run code
 function run(code,     size, acc, ip, visited, instr) {
   size = length(code)
@@ -55,26 +46,24 @@ END {
   ## brute force approach
   ## change each subsequent JMP to NOP
 
-  ## repeat for all instruction
   for (i=0; i<n; i++) {
-    ## reset our code to original
-    copy(code, runcode)
+    ## change next "jmp" instruction to "nop"
+    if (code[i] ~ /^jmp /) {
+      org = code[i]
+      sub(/^jmp /, "nop ", code[i])
 
-    ## modify next "jmp" instruction
-    for (j=i; j<n; j++) {
-      # change "jmp" to "nop"
-      split(runcode[j], instr)
-      if (instr[1] == "jmp") {
-        runcode[j] = "nop " instr[2]
-        break
+      ## run code
+      answer = run(code)
+
+      if (answer != -1) {
+        ## found the answer
+        printf("answer: %d (changed ip @%d from \"%s\" to \"%s\")\n", answer, i, org, code[i])
+        exit 0
+      } else {
+        ## return code to original state
+        code[i] = org
       }
     }
 
-    ## run our modified code
-    answer = run(runcode)
-    if (answer != -1) {
-      printf("answer: %d (changed ip @%d from \"%s\" to \"%s\")\n", answer, j, code[j], runcode[j])
-      exit 0
-    }
   }
 }
