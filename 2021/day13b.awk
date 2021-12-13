@@ -1,4 +1,4 @@
-#!/usr/bin/mawk -f
+#!/usr/bin/awk -f
 
 function printmap(map,    x,y) {
   for (y=0; y<=height; y++) {
@@ -11,23 +11,23 @@ function printmap(map,    x,y) {
 function yfold(map, linenr,    x,y) {
   height = linenr * 2
 
-  for (y=linenr; y<=height; y++)
+  for (y=0; y<linenr; y++)
     for (x=0; x<=width; x++)
-      map[x,(height-y)] = (map[x,y] || map[x,(height-y)]) ? 1 : 0
+      map[x,y] = (map[x,y] || map[x,(height-y)])
   height = (linenr - 1)
 }
 
 function xfold(map, colnr,    x,y) {
   width = colnr * 2
 
-  for (x=colnr; x<=width; x++)
-    for (y=0; y<=height; y++)
-      map[(width-x),y] = (map[x,y] || map[(width-x),y]) ? 1 : 0
+  for (y=0; y<=height; y++)
+    for (x=0; x<=colnr; x++)
+      map[x,y] = (map[x,y] || map[(width-x),y])
   width = (colnr - 1)
 }
 
 
-BEGIN { FS="," }
+BEGIN { FS="[ ,=]" }
 
 /^[0-9]*,[0-9]*$/ {
   map[$1,$2] = 1
@@ -37,13 +37,11 @@ BEGIN { FS="," }
 }
 
 /fold along x=[0-9]*/ {
-  split($0, val, "=")
-  xfold(map, val[2])
+  xfold(map, $4)
 }
 
 /fold along y=[0-9]*/ {
-  split($0, val, "=")
-  yfold(map, val[2])
+  yfold(map, $4)
 }
 
 END {
